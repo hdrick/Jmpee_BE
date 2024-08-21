@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name="users")
@@ -14,11 +16,12 @@ public class User {
     private long id;
     private String firstName;
     private String lastName;
-
+    private String email;
+    private String password;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Address> addresses = new ArrayList<>();
+    @JsonManagedReference
+    private Set<Address> addresses = new HashSet<>();
 
-    // ManyToMany Relationship if roles are shared across users
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(
             name = "user_roles",
@@ -31,11 +34,13 @@ public class User {
     public User() {
     }
 
-    public User(String firstName, String lastName, List<Address> addresses, List<Role> roles) {
+    public User(String firstName, String lastName, String email, String password, Set<Address> addresses, List<Role> roles) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.addresses = addresses != null ? addresses : new ArrayList<>();
-        this.roles = roles != null ? roles : new ArrayList<>();
+        this.email = email;
+        this.password = password;
+        this.addresses = addresses;
+        this.roles = roles;
     }
 
     public long getId() {
@@ -62,22 +67,35 @@ public class User {
         this.lastName = lastName;
     }
 
-    public List<Address> getAddresses() {
-        return addresses;
-    }
-
-    public void setAddresses(List<Address> addresses) {
-        this.addresses = addresses;
-        for (Address address : addresses) {
-            address.setUser_id(this);
-        }
-    }
-
     public List<Role> getRoles() {
         return roles;
     }
 
     public void setRoles(List<Role> roles) {
         this.roles = roles;
+    }
+
+    public Set<Address> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(Set<Address> addresses) {
+        this.addresses = addresses;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

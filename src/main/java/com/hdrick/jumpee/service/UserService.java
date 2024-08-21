@@ -9,6 +9,7 @@ import com.hdrick.jumpee.model.User;
 import com.hdrick.jumpee.repository.RoleRepository;
 import com.hdrick.jumpee.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,16 +22,23 @@ public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
 
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
     @Autowired
-    public UserService(UserRepository userRepository, RoleRepository roleRepository){
+    public UserService(UserRepository userRepository, RoleRepository roleRepository, BCryptPasswordEncoder bCryptPasswordEncoder){
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     public User createUser(UserCreationDTO userCreationDTO){
         User user = new User();
         user.setFirstName(userCreationDTO.getFirstName());
         user.setLastName(userCreationDTO.getLastName());
+        user.setEmail(userCreationDTO.getEmail());
+
+        String encodedPassword = bCryptPasswordEncoder.encode(userCreationDTO.getPassword());
+        user.setPassword(encodedPassword);
 
         // Handle roles
         List<Role> roles = userCreationDTO.getNewRoles().stream()
@@ -44,7 +52,7 @@ public class UserService {
     }
 
     public void addAddressToUser(Long id, AddressDTO addressDTO){
-        Address address = new Address();
+
         // Find the user by ID
         Optional<User> optionalUser = userRepository.findById(id);
 
@@ -54,7 +62,8 @@ public class UserService {
 
         User user = optionalUser.get();
 
-        address.setUser_id(user.getId());
+        Address address = new Address();
+        address.setUser(user);
         address.setStreet(addressDTO.getStreet());
         address.setCity(addressDTO.getCity());
         address.setState(addressDTO.getState());
@@ -63,6 +72,10 @@ public class UserService {
         user.getAddresses().add(address);
 
         userRepository.save(user);
+    }
+
+    public List<User> getAllUsersWithAddresses() {
+        return userRepository.findAll(); // Assuming findAll fetches users with addresses due to eager loading or fetch type configuration
     }
 
 

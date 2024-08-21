@@ -5,6 +5,8 @@ import java.util.List;
 public class UserCreationDTO {
     private String firstName;
     private String lastName;
+    private String email;
+    private String password;
     private List<RoleDTO> newRoles;
 
     public String getFirstName() {
@@ -29,5 +31,21 @@ public class UserCreationDTO {
 
     public void setNewRoles(List<RoleDTO> newRoles) {
         this.newRoles = newRoles;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
