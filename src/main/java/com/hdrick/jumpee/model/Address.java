@@ -1,5 +1,7 @@
 package com.hdrick.jumpee.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -16,18 +18,19 @@ public class Address {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private Long user_id;
+    @JsonBackReference
+    private User user;
 
     // No-argument constructor
     public Address() {
     }
 
-    // Parameterized constructor
-    public Address(String street, String city, String state, String zipCode) {
+    public Address(String street, String city, String state, String zipCode, User user) {
         this.street = street;
         this.city = city;
         this.state = state;
         this.zipCode = zipCode;
+        this.user = user;
     }
 
     public Long getId() {
@@ -70,11 +73,11 @@ public class Address {
         this.zipCode = zipCode;
     }
 
-    public Long getUser_id() {
-        return user_id;
+    public User getUser() {
+        return user;
     }
 
-    public void setUser_id(Long user_id) {
-        this.user_id = user_id;
+    public void setUser(User user) {
+        this.user = user;
     }
 }
